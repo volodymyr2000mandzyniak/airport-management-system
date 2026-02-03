@@ -1,24 +1,42 @@
-# README
+# Airport Management System - Test Task
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Project Overview
+Rails 8 application modeling a complex Airport Management System domain.
 
-Things you may want to cover:
+## Key Features
+- 12-16 ActiveRecord models
+- Complex relationships and validations
+- Time-based resource assignments
+- Business rules enforcement
+- PostgreSQL with advanced constraints
 
-* Ruby version
+## Setup Instructions
 
-* System dependencies
+### Prerequisites
+- Ruby 3.2+
+- PostgreSQL 12+
+- Rails 8.0+
 
-* Configuration
+### Installation
+1. Clone the repository
+2. Install dependencies: `bundle install`
+3. Create database: `rails db:create db:migrate`
+4. (Optional) Seed data: `rails db:seed`
 
-* Database creation
+## Domain Overview
+The system models:
+- Airport physical structure (terminals, gates, counters)
+- Airlines, aircraft, and seating
+- Flights vs flight instances
+- Time-based resource assignments
+- Passengers, bookings, and boarding process
 
-* Database initialization
+## Technical Details
+- Rails 8 with PostgreSQL
+- Model-level validations
+- Database constraints
+- Clean, idiomatic Ruby code
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Development Notes
+- UI/controllers/views are out of scope per requirements
+- Focus on data modeling and business logic
