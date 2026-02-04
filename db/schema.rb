@@ -10,9 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_04_135748) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_04_153235) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "aircrafts", force: :cascade do |t|
+    t.bigint "airline_id", null: false
+    t.string "model", null: false
+    t.string "registration_number", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["airline_id"], name: "index_aircrafts_on_airline_id"
+    t.index ["registration_number"], name: "index_aircrafts_on_registration_number", unique: true
+  end
+
+  create_table "airlines", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_airlines_on_code", unique: true
+  end
 
   create_table "airports", force: :cascade do |t|
     t.string "name", null: false
@@ -44,6 +62,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_04_135748) do
     t.index ["terminal_id"], name: "index_gates_on_terminal_id"
   end
 
+  create_table "seats", force: :cascade do |t|
+    t.bigint "aircraft_id", null: false
+    t.string "seat_number", null: false
+    t.integer "cabin_class", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["aircraft_id", "seat_number"], name: "index_seats_on_aircraft_id_and_seat_number", unique: true
+    t.index ["aircraft_id"], name: "index_seats_on_aircraft_id"
+  end
+
   create_table "terminals", force: :cascade do |t|
     t.bigint "airport_id", null: false
     t.string "code", null: false
@@ -54,7 +82,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_04_135748) do
     t.index ["airport_id"], name: "index_terminals_on_airport_id"
   end
 
+  add_foreign_key "aircrafts", "airlines"
   add_foreign_key "check_in_counters", "terminals"
   add_foreign_key "gates", "terminals"
+  add_foreign_key "seats", "aircrafts"
   add_foreign_key "terminals", "airports"
 end
