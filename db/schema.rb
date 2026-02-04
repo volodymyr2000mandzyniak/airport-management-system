@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_04_153235) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_04_165531) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,6 +53,33 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_04_153235) do
     t.index ["terminal_id"], name: "index_check_in_counters_on_terminal_id"
   end
 
+  create_table "flight_instances", force: :cascade do |t|
+    t.bigint "flight_id", null: false
+    t.datetime "scheduled_departure_at", null: false
+    t.datetime "scheduled_arrival_at", null: false
+    t.datetime "actual_departure_at"
+    t.datetime "actual_arrival_at"
+    t.integer "status", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["flight_id"], name: "index_flight_instances_on_flight_id"
+    t.index ["scheduled_departure_at"], name: "index_flight_instances_on_scheduled_departure_at"
+    t.index ["status"], name: "index_flight_instances_on_status"
+  end
+
+  create_table "flights", force: :cascade do |t|
+    t.bigint "airline_id", null: false
+    t.string "flight_number", null: false
+    t.bigint "origin_airport_id", null: false
+    t.bigint "destination_airport_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["airline_id", "flight_number"], name: "index_flights_on_airline_id_and_flight_number", unique: true
+    t.index ["airline_id"], name: "index_flights_on_airline_id"
+    t.index ["destination_airport_id"], name: "index_flights_on_destination_airport_id"
+    t.index ["origin_airport_id"], name: "index_flights_on_origin_airport_id"
+  end
+
   create_table "gates", force: :cascade do |t|
     t.bigint "terminal_id", null: false
     t.string "code", null: false
@@ -84,6 +111,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_04_153235) do
 
   add_foreign_key "aircrafts", "airlines"
   add_foreign_key "check_in_counters", "terminals"
+  add_foreign_key "flight_instances", "flights"
+  add_foreign_key "flights", "airlines"
+  add_foreign_key "flights", "airports", column: "destination_airport_id"
+  add_foreign_key "flights", "airports", column: "origin_airport_id"
   add_foreign_key "gates", "terminals"
   add_foreign_key "seats", "aircrafts"
   add_foreign_key "terminals", "airports"
