@@ -1,5 +1,7 @@
 class FlightInstance < ApplicationRecord
   belongs_to :flight
+  has_many :gate_assignment, dependent: :destroy
+  has_many :check_in_assignments, dependent: :destroy
 
   enum :status, {
     scheduled: 0,

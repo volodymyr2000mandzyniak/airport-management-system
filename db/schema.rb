@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_04_165531) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_05_151524) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
 
   create_table "aircrafts", force: :cascade do |t|
@@ -42,6 +43,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_04_165531) do
     t.index ["code"], name: "index_airports_on_code", unique: true
     t.index ["iata_code"], name: "index_airports_on_iata_code", unique: true, where: "(iata_code IS NOT NULL)"
     t.index ["icao_code"], name: "index_airports_on_icao_code", unique: true, where: "(icao_code IS NOT NULL)"
+  end
+
+  create_table "check_in_assignments", force: :cascade do |t|
+    t.bigint "flight_instance_id", null: false
+    t.bigint "check_in_counter_id", null: false
+    t.datetime "active_from", null: false
+    t.datetime "active_to", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["check_in_counter_id"], name: "index_check_in_assignments_on_check_in_counter_id"
+    t.index ["flight_instance_id"], name: "index_check_in_assignments_on_flight_instance_id"
+    t.check_constraint "active_to > active_from", name: "check_in_assignments_active_range_valid"
+    t.exclusion_constraint "check_in_counter_id WITH =, tsrange(active_from, active_to, '[)'::text) WITH &&", using: :gist, name: "check_in_assignments_no_overlapping_counter"
   end
 
   create_table "check_in_counters", force: :cascade do |t|
@@ -80,6 +94,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_04_165531) do
     t.index ["origin_airport_id"], name: "index_flights_on_origin_airport_id"
   end
 
+  create_table "gate_assignments", force: :cascade do |t|
+    t.bigint "flight_instance_id", null: false
+    t.bigint "gate_id", null: false
+    t.datetime "active_from", null: false
+    t.datetime "active_to", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["flight_instance_id"], name: "index_gate_assignments_on_flight_instance_id"
+    t.index ["gate_id"], name: "index_gate_assignments_on_gate_id"
+    t.check_constraint "active_to > active_from", name: "gate_assignments_active_range_valid"
+    t.exclusion_constraint "gate_id WITH =, tsrange(active_from, active_to, '[)'::text) WITH &&", using: :gist, name: "gate_assignments_no_overlapping_gate"
+  end
+
   create_table "gates", force: :cascade do |t|
     t.bigint "terminal_id", null: false
     t.string "code", null: false
@@ -110,11 +137,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_04_165531) do
   end
 
   add_foreign_key "aircrafts", "airlines"
+  add_foreign_key "check_in_assignments", "check_in_counters"
+  add_foreign_key "check_in_assignments", "flight_instances"
   add_foreign_key "check_in_counters", "terminals"
   add_foreign_key "flight_instances", "flights"
   add_foreign_key "flights", "airlines"
   add_foreign_key "flights", "airports", column: "destination_airport_id"
   add_foreign_key "flights", "airports", column: "origin_airport_id"
+  add_foreign_key "gate_assignments", "flight_instances"
+  add_foreign_key "gate_assignments", "gates"
   add_foreign_key "gates", "terminals"
   add_foreign_key "seats", "aircrafts"
   add_foreign_key "terminals", "airports"
