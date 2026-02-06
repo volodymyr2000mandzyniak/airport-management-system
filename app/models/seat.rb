@@ -5,5 +5,5 @@ class Seat < ApplicationRecord
 
   validates :aircraft, presence: true
   validates :seat_number, presence: true, uniqueness: { scope: :aircraft_id }
-  validates :cabin_class, presence: true
+  validates :cabin_class, presence: true, inclusion: { in: cabin_classes.keys }
 end
