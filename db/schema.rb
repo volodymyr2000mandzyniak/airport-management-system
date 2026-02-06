@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_06_140931) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_06_170638) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
@@ -183,6 +183,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_06_140931) do
     t.datetime "checked_in_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["booking_id", "passenger_id"], name: "index_tickets_on_booking_id_and_passenger_id_unique", unique: true
     t.index ["booking_id"], name: "index_tickets_on_booking_id"
     t.index ["flight_instance_id", "seat_id"], name: "index_tickets_on_flight_instance_and_seat_unique", unique: true, where: "(seat_id IS NOT NULL)"
     t.index ["flight_instance_id"], name: "index_tickets_on_flight_instance_id"

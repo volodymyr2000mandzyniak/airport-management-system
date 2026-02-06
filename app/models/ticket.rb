@@ -13,6 +13,9 @@ class Ticket < ApplicationRecord
   validate :flight_instance_matches_booking
   validate :seat_belongs_to_flight_aircraft
 
+  validates :passenger_id,
+          uniqueness: { scope: :booking_id, message: "already has a ticket in this booking" }
+
   before_validation :sync_flight_instance_from_booking, if: -> { booking.present? && flight_instance.blank? }
 
   private
